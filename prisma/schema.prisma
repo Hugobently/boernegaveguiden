@@ -1,0 +1,126 @@
+// Børnegaveguiden - Database Schema
+// Danish gift guide for children
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Gift {
+  id                String   @id @default(cuid())
+
+  // Grundlæggende info
+  title             String
+  slug              String   @unique
+  description       String   // Dybdegående anmeldelse (600-900 tegn)
+  shortDescription  String   // Kort tekst til kort (max 150 tegn)
+
+  // Aldersgruppe
+  minAge            Int
+  maxAge            Int
+  ageGroup          String   // "0-2", "3-5", "6-9", "10-12", "13-15"
+
+  // Kategorisering
+  category          String   // Hovedkategori: legetoej, boeger, kreativ, etc.
+  subcategories     String   @default("[]") // JSON array af underkategorier
+  tags              String   @default("[]") // JSON array af tags
+  targetGender      String   @default("alle") // "alle", "drenge", "piger"
+
+  // Pris & køb
+  price             Float?   // Vejledende pris i DKK
+  priceClass        String   // budget, mellem-lav, mellem, mellem-høj, premium, luksus
+
+  // Affiliate links (multiple mulige)
+  affiliateLinks    String   @default("[]") // JSON: [{provider, url, price}]
+  primaryBuyUrl     String?  // Primær købs-URL
+
+  // Anmeldelse
+  rating            Float    // 1-5 stjerner
+  pros              String   @default("[]") // JSON array
+  cons              String   @default("[]") // JSON array
+  parentTip         String?  // Tip til forældre
+
+  // Detaljer specifik for kategori
+  details           String   @default("{}") // JSON med kategori-specifikke felter
+
+  // Media
+  imageUrl          String?  // Hovedbillede
+  additionalImages  String   @default("[]") // JSON array af ekstra billeder
+
+  // Brands & producent
+  brand             String?
+  manufacturer      String?
+
+  // Særlige flags
+  featured          Boolean  @default(false)
+  editorChoice      Boolean  @default(false)
+  isConfirmationGift Boolean @default(false) // Egnet til konfirmation
+  isSustainable     Boolean  @default(false) // Bæredygtigt produkt
+  isDanishBrand     Boolean  @default(false) // Dansk brand
+
+  // SEO & meta
+  metaTitle         String?
+  metaDescription   String?
+
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([category])
+  @@index([ageGroup])
+  @@index([priceClass])
+  @@index([featured])
+  @@index([editorChoice])
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  icon        String?  // Emoji eller ikon-navn
+  sortOrder   Int      @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Brand {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  logoUrl     String?
+  websiteUrl  String?
+  isDanish    Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  type      String   // page_view, gift_click, affiliate_click, search_query
+  sessionId String?
+  data      String   @default("{}") // JSON med event-specifikke data
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([createdAt])
+}
+
+model SearchQuery {
+  id        String   @id @default(cuid())
+  query     String
+  count     Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([query])
+  @@index([count])
+}

@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Børnegaveguiden
+
+En dansk hjemmeside der hjælper forældre med at finde kvalitetsgaver til børn i alle aldre.
+
+## Tech Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Database:** PostgreSQL (Vercel Postgres)
+- **ORM:** Prisma
+- **Styling:** Tailwind CSS
+- **Language:** TypeScript
+- **Hosting:** Vercel
+
+## Features
+
+- Gaveanbefalinger organiseret efter alder (0-2, 3-5, 6-9, 10-12, 13-15 år)
+- Kategorier: Legetøj, Bøger, Kreative sæt, Udstyr, Oplevelser, Elektronik, Tøj & mode
+- Søgefunktion med autocomplete
+- Affiliate-links til danske webshops
+- SEO-optimeret med dansk indhold
+- Mobilvenligt design
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+
+- npm/yarn/pnpm
+- PostgreSQL database (eller Vercel Postgres)
+
+### Installation
+
+1. Klon projektet:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Hugobently/boernegaveguiden.git
+cd boernegaveguiden
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Installer dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Opret `.env` fil baseret på `.env.example`:
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Konfigurer database URL i `.env`
 
-## Learn More
+5. Generer Prisma client og push schema:
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Seed databasen:
+```bash
+npm run db:seed
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+7. Start udviklings-serveren:
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Åbn [http://localhost:3000](http://localhost:3000) i din browser.
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev` - Start udviklings-server
+- `npm run build` - Byg til produktion
+- `npm run start` - Start produktions-server
+- `npm run lint` - Kør ESLint
+- `npm run db:seed` - Seed databasen med gaver
+- `npm run db:reset` - Nulstil database
+- `npm run db:studio` - Åbn Prisma Studio
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Projektstruktur
+
+```
+boernegaveguiden/
+├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes
+│   ├── gaver/             # Gave-sider
+│   ├── kategori/          # Kategori-sider
+│   ├── alder/             # Alders-sider
+│   └── ...
+├── components/            # React komponenter
+│   ├── ui/               # UI komponenter
+│   ├── layout/           # Layout komponenter
+│   └── gifts/            # Gave-komponenter
+├── lib/                   # Utilities og database
+├── prisma/               # Database schema og seed
+├── data/                 # Seed data
+└── public/               # Statiske filer
+```
+
+## Environment Variables
+
+| Variable | Beskrivelse |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `DIRECT_URL` | Direct database URL (Vercel) |
+| `NEXT_PUBLIC_SITE_URL` | Sidens URL (produktion) |
+
+## Deploy
+
+Projektet er konfigureret til Vercel. Ved push til main deployes automatisk.
+
+Build kommandoen inkluderer automatisk `prisma generate && prisma db push`.
+
+## License
+
+Privat projekt - Alle rettigheder forbeholdes.
